@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  database:
+    image: mongo:7.0
+    container_name: todo-database
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - todo-app
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: todo-backend
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - todo-app
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: todo-frontend
+    restart: always
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    networks:
+      - todo-app
+
+networks:
+  todo-app:
+    driver: bridge
+
+volumes:
+  mongodb_data:
