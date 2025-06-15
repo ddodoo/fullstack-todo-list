@@ -92,7 +92,7 @@ sleep 5
 test_endpoint "http://localhost:3000" "Backend API"
 
 # Test backend todos endpoint
-test_endpoint "http://localhost:3000/todos" "Backend /todos endpoint"
+test_endpoint "http://localhost:3000/" "Backend / endpoint"
 
 # Test frontend
 test_endpoint "http://localhost:3001" "Frontend application"
@@ -102,8 +102,8 @@ echo "5. Testing API Functionality..."
 echo "-----------------------------"
 
 # Test POST request (create todo)
-echo -n "Testing POST /todos... "
-post_response=$(curl -s -X POST http://localhost:3000/todos \
+echo -n "Testing POST /... "
+post_response=$(curl -s -X POST http://localhost:3000/ \
   -H "Content-Type: application/json" \
   -d '{"title":"Test Todo","completed":false}' \
   -w "%{http_code}" -o /tmp/post_response.json 2>/dev/null)
@@ -117,8 +117,8 @@ else
 fi
 
 # Test GET request (fetch todos)
-echo -n "Testing GET /todos... "
-get_response=$(curl -s -w "%{http_code}" http://localhost:3000/todos -o /tmp/get_response.json 2>/dev/null)
+echo -n "Testing GET /... "
+get_response=$(curl -s -w "%{http_code}" http://localhost:3000/ -o /tmp/get_response.json 2>/dev/null)
 
 if [ "$get_response" = "200" ]; then
     echo -e "${GREEN}✅ ($get_response)${NC}"
@@ -129,7 +129,7 @@ fi
 # Cleanup test todo if created successfully
 if [ ! -z "$TODO_ID" ]; then
     echo -n "Cleaning up test todo... "
-    delete_response=$(curl -s -X DELETE "http://localhost:3000/todos/$TODO_ID" -w "%{http_code}" -o /dev/null 2>/dev/null)
+    delete_response=$(curl -s -X DELETE "http://localhost:3000/$TODO_ID" -w "%{http_code}" -o /dev/null 2>/dev/null)
     if [[ "$delete_response" =~ ^(200|204)$ ]]; then
         echo -e "${GREEN}✅${NC}"
     else
@@ -161,7 +161,7 @@ echo ""
 echo "Access URLs:"
 echo "- Frontend: http://localhost:3001"
 echo "- Backend API: http://localhost:3000"
-echo "- Backend API docs: http://localhost:3000/todos"
+echo "- Backend API docs: http://localhost:3000/"
 
 # Cleanup temp files
 rm -f /tmp/post_response.json /tmp/get_response.json
@@ -176,8 +176,8 @@ docker compose exec frontend curl http://localhost:80
 docker compose exec database mongosh -u admin -p '9$9i&ZNw0e>4' --authenticationDatabase admin
 
 # Test API endpoints
-curl http://localhost:3000/todos
-curl -X POST http://localhost:3000/todos -H "Content-Type: application/json" -d '{"title":"Test","completed":false}'
+curl http://localhost:3000/
+curl -X POST http://localhost:3000/ -H "Content-Type: application/json" -d '{"title":"Test","completed":false}'
 
 # Test database directly
 docker compose exec database mongosh -u admin -p '9$9i&ZNw0e>4' --authenticationDatabase admin todoapp --eval "db.todos.find()"
